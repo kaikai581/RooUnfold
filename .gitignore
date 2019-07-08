@@ -1,3 +1,13 @@
 # ignore pdfs, precompiled python, etc
 *.pdf
 *.pyc
+
+# ignore ROOT-generated files
+*.pcm
+*.rootmap
+
+# ignore libraries
+*.so
+
+# ignore build folder
+tmp/
