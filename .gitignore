@@ -11,3 +11,6 @@
 
 # ignore build folder
 tmp/
+
+# ignore Visual Studio Code setting folder
+.vscode/

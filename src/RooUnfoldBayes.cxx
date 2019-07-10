@@ -65,6 +65,16 @@ RooUnfoldBayes::RooUnfoldBayes (const RooUnfoldResponse* res, const TH1* meas, I
   Init();
 }
 
+RooUnfoldBayes::RooUnfoldBayes (const RooUnfoldResponse* res, const TH1* meas, const TVectorD* prior, Int_t niter,
+                                Bool_t smoothit, const char* name, const char* title)
+  : RooUnfold (res, meas, name, title), _niter(niter), _smoothit(smoothit)
+{
+  // Constructor with response matrix object, measured unfolding input histogram, and iterated prior.
+  // The regularisation parameter is niter (number of iterations).
+  Init();
+  _nCiIter = prior;
+}
+
 RooUnfoldBayes* RooUnfoldBayes::Clone (const char* newname) const
 {
   // Creates a copy of the RooUnfoldBayes object
@@ -77,6 +87,7 @@ void RooUnfoldBayes::Init()
 {
   _nc= _ne= 0;
   _nbartrue= _N0C= 0.0;
+  _nCiIter = nullptr;
   GetSettings();
 }
 
@@ -152,7 +163,10 @@ void RooUnfoldBayes::setup()
   _nEstj= Vmeasured();
 
   _nCi.ResizeTo(_nt);
-  _nCi= _res->Vtruth();
+  if (!_nCiIter)
+    _nCi= _res->Vtruth();
+  else
+    _nCi = TVectorD(*_nCiIter);
 
   _Nji.ResizeTo(_ne,_nt);
   H2M (_res->Hresponse(), _Nji, _overflow);   // don't normalise, which is what _res->Mresponse() would give us

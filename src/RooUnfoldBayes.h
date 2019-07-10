@@ -39,11 +39,15 @@ public:
   RooUnfoldBayes (const RooUnfoldResponse* res, const TH1* meas, Int_t niter= 4, Bool_t smoothit= false,
                   const char* name= 0, const char* title= 0);
 
+  RooUnfoldBayes (const RooUnfoldResponse* res, const TH1* meas, const TVectorD* prior, Int_t niter= 4, Bool_t smoothit= false,
+                  const char* name= 0, const char* title= 0);
+
   void SetIterations (Int_t niter= 4);
   void SetSmoothing  (Bool_t smoothit= false);
   Int_t GetIterations() const;
   Int_t GetSmoothing()  const;
   const TMatrixD& UnfoldingMatrix() const;
+  const TVectorD PriorDistribution() const;
 
   virtual void  SetRegParm (Double_t parm);
   virtual Double_t GetRegParm() const;
@@ -83,6 +87,7 @@ protected:
 
   TVectorD _nEstj;        // Number of measured events from Effect E_j
   TVectorD _nCi;          // Number of true events from cause C_i
+  const TVectorD* _nCiIter; // Number of iterated true events from cause C_i for bootstrapping
   TVectorD _nbarCi;       // Estimated number of true events from cause C_i
   TVectorD _efficiencyCi; // efficiency for detecting cause C_i
   TVectorD _P0C;          // prior before last iteration
@@ -167,6 +172,13 @@ const TMatrixD& RooUnfoldBayes::UnfoldingMatrix() const
 {
   // Access unfolding matrix (Mij)
   return _Mij;
+}
+
+inline
+const TVectorD RooUnfoldBayes::PriorDistribution() const
+{
+  // Access iterated prior distribution (nCi)
+  return _P0C * _N0C;
 }
 
 inline
